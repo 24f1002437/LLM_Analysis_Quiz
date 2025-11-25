@@ -1,9 +1,17 @@
-envVars:
-  - key: SECRET_STRING
-    sync: false
-  - key: GEMINI_API_KEY
-    sync: false
-  - key: SYSTEM_PROMPT
-    sync: false
-  - key: USER_PROMPT
-    sync: false
+services:
+  - type: web
+    name: llm-quiz-backend
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt && playwright install --with-deps"
+    startCommand: "gunicorn app:app --bind 0.0.0.0:10000"
+    envVars:
+      - key: SECRET_STRING
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SYSTEM_PROMPT
+        sync: false
+      - key: USER_PROMPT
+        sync: false

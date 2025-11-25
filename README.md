@@ -1,4 +1,4 @@
-# LLM Quiz Project — Flask + Gemini + Playwright (Render-ready)
+# LLM Quiz Project — Flask + Gemini + Playwright 
 
 This project implements the `/api/quiz` endpoint for the LLM Analysis Quiz assignment.
 
@@ -10,7 +10,3 @@ This project implements the `/api/quiz` endpoint for the LLM Analysis Quiz assig
 - Submits answers to the submit URL found on quiz pages
 - Deploy-ready for Render (render.yaml included)
 
-## Quickstart (local)
-1. Clone repo and `cd backend`
-2. Create virtualenv and activate
-3. Install packages:

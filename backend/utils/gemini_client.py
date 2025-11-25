@@ -8,7 +8,7 @@ if not GEMINI_API_KEY:
 else:
     genai.configure(api_key=GEMINI_API_KEY)
 
-MODEL = genai.GenerativeModel("gemini-1.5-flash")
+MODEL = genai.GenerativeModel("models/gemini-2.5-flash")
 
 def ask_gemini(prompt: str, max_tokens: int = 1024) -> str:
     """

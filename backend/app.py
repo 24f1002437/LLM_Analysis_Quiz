@@ -1,29 +1,50 @@
+import time
 from flask import Flask, request, jsonify
-from config import SECRET_STRING, SYSTEM_PROMPT, USER_PROMPT
-from utils.gemini_client import ask_gemini
+from config import SECRET_STRING
+from solver import solve_quiz_url
+import logging
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
 
 @app.post("/api/quiz")
-def quiz():
-    data = request.json
+def quiz_endpoint():
+    # Validate JSON
+    try:
+        payload = request.get_json(force=True)
+    except Exception:
+        return jsonify({"error": "invalid json"}), 400
 
-    # Verify secret
-    if data.get("secret") != SECRET_STRING:
-        return jsonify({"error": "Unauthorized"}), 403
+    email = payload.get("email")
+    secret = payload.get("secret")
+    url = payload.get("url")
 
-    # Quiz question from evaluator
-    question = data.get("question")
+    if not (email and secret and url):
+        return jsonify({"error": "missing fields"}), 400
 
-    # Build final LLM prompt
-    full_prompt = f"""
-System Prompt (Student): {SYSTEM_PROMPT}
+    if secret != SECRET_STRING:
+        return jsonify({"error": "invalid secret"}), 403
 
-User Prompt (Student): {USER_PROMPT}
+    # Secret matches -> we will solve the quiz and return a 200 with results
+    start = time.time()
+    try:
+        result = solve_quiz_url(url)
+    except Exception as e:
+        return jsonify({"error": "solver_error", "exception": str(e)}), 500
 
-Task from evaluator:
-{question}
-"""
+    elapsed = time.time() - start
+    response = {
+        "ok": True,
+        "email": email,
+        "url": url,
+        "result": result,
+        "elapsed_seconds": elapsed
+    }
+    return jsonify(response), 200
 
-    result = ask_gemini(full_prompt)
-    return jsonify({"answer": result})
+@app.get("/")
+def home():
+    return "LLM Quiz Project "
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

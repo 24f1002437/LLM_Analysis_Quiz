@@ -1,0 +1,9 @@
+envVars:
+  - key: SECRET_STRING
+    sync: false
+  - key: GEMINI_API_KEY
+    sync: false
+  - key: SYSTEM_PROMPT
+    sync: false
+  - key: USER_PROMPT
+    sync: false

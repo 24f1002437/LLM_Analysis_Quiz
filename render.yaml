@@ -1,0 +1,22 @@
+renderservices:
+  - type: web
+    name: llm-quiz-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && playwright install
+    startCommand: gunicorn -b 0.0.0.0:5000 app:app --workers 1
+    envVars:
+      - key: SECRET_STRING
+        value: your_secret_here
+      - key: GEMINI_API_KEY
+        value: your_gemini_key_here
+      - key: SYSTEM_PROMPT
+        value: "System prompt text"
+      - key: USER_PROMPT
+        value: "User prompt text"
+      - key: PLAYWRIGHT_NAV_TIMEOUT
+        value: "60"
+      - key: SOLVE_TOTAL_TIMEOUT
+        value: "160"
+      - key: REQUEST_TIMEOUT
+        value: "30"

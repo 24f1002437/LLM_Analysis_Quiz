@@ -130,3 +130,5 @@ def ask_gemini_with_file(prompt: str, file_metadata: Dict[str, Any]) -> str:
         return f"[Gemini Error] {str(e)}"
 
     return getattr(response, "text", "") or str(response)
+
+    

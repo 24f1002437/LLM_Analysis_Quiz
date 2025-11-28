@@ -1,17 +1,34 @@
-services:
-  - type: web
-    name: llm-quiz-backend
-    env: python
-    plan: free
-    rootDir: backend
-    buildCommand: "pip install -r requirements.txt && playwright install --with-deps"
-    startCommand: "gunicorn app:app --bind 0.0.0.0:10000"
-    envVars:
-      - key: SECRET_STRING
-        sync: false
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: SYSTEM_PROMPT
-        sync: false
-      - key: USER_PROMPT
-        sync: false
+# Hugging Face Space configuration
+sdk: flask
+title: LLM Quiz Project
+emoji: 🧠
+description: "LLM-powered quiz solver with file parsing, audio transcription, and image generation (Gemini/GPT)."
+python_version: "3.11"
+
+# Environments variables required
+env:
+  - name: SECRET_STRING
+    description: "Secret string to validate POST requests"
+    value: ""
+  - name: GEMINI_API_KEY
+    description: "Your Google Gemini / Generative AI API key"
+    value: ""
+  - name: SYSTEM_PROMPT
+    description: "System prompt for LLMs (<=100 chars)"
+    value: ""
+  - name: USER_PROMPT
+    description: "User prompt for LLMs (<=100 chars)"
+    value: ""
+  - name: PLAYWRIGHT_NAV_TIMEOUT
+    description: "Navigation timeout (seconds)"
+    value: "60"
+  - name: SOLVE_TOTAL_TIMEOUT
+    description: "Total quiz solve timeout (seconds)"
+    value: "160"
+  - name: REQUEST_TIMEOUT
+    description: "HTTP request timeout (seconds)"
+    value: "30"
+
+# Optional
+ports:
+  - 5000

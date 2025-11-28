@@ -116,49 +116,44 @@ def parse_image(path: str):
 # ---------------------------
 def parse_audio(path: str):
     info = {}
+    ext = os.path.splitext(path)[1].lower()
 
-    ext = os.path.splitext(path)[1][1:].lower()
-    mime = AUDIO_MIME_MAP.get(ext, f"audio/{ext}")
-
-    # WAV metadata
-    try:
-        if ext == "wav":
+    # Basic WAV metadata
+    if ext == ".wav":
+        try:
             with contextlib.closing(wave.open(path, 'rb')) as wf:
-                info.update({
+                info = {
                     "channels": wf.getnchannels(),
                     "sample_width": wf.getsampwidth(),
                     "framerate": wf.getframerate(),
                     "frames": wf.getnframes(),
-                    "duration_sec": wf.getnframes() / wf.getframerate(),
-                })
-        else:
-            info.update({
-                "format": ext,
-                "size": os.path.getsize(path)
-            })
-    except Exception as e:
-        info.update({"audio_metadata_error": str(e)})
+                    "duration_sec": wf.getnframes() / wf.getframerate()
+                }
+        except Exception as e:
+            info["metadata_error"] = str(e)
+    else:
+        info = {"format": ext[1:], "size": os.path.getsize(path)}
 
-    # Transcription
-    try:
-        with open(path, "rb") as f:
-            audio_bytes = f.read()
+    # Transcribe using Gemini
+    transcription = ""
+    if GEMINI_API_KEY:
+        try:
+            with open(path, "rb") as f:
+                audio_bytes = f.read()
+            resp = genai.audio.transcribe(
+                model="models/gemini-2.5-flash",
+                audio=audio_bytes,
+                audio_format=ext[1:]
+            )
+            transcription = getattr(resp, "text", "")
+            if not transcription:
+                transcription = "[No transcription returned; possibly blocked or empty audio]"
+        except Exception as e:
+            transcription = f"[Transcription failed: {str(e)}]"
+    else:
+        transcription = "[GEMINI_API_KEY not set; skipping transcription]"
 
-        resp = genai.audio.transcribe(
-            model="models/gemini-2.5-flash",
-            audio=audio_bytes,
-            audio_format=ext
-        )
-        transcription = resp.text
-
-    except Exception as e:
-        transcription = f"Transcription failed: {str(e)}"
-
-    info.update({
-        "type": "audio",
-        "mime": mime,
-        "transcription": transcription
-    })
+    info.update({"type": "audio", "transcription": transcription})
     return info
 
 

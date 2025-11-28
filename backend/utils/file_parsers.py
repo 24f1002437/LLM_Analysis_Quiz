@@ -6,7 +6,7 @@ import os
 from PIL import Image
 import wave
 import contextlib
-import genai  # Gemini SDK
+import google.generativeai as genai # Gemini SDK
 
 # Configure Gemini (make sure GEMINI_API_KEY is set in env)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
